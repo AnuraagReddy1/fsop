@@ -32,7 +32,9 @@ let persons = [
   },
 ];
 
-app.get("/api/persons", (request, response) => {
+const baseUrl = '/api/persons'
+
+app.get(baseUrl, (request, response) => {
   response.json(persons);
   
 });
@@ -44,7 +46,7 @@ app.get("/info", (request, response) => {
   );
 });
 
-app.get("/api/persons/:id", (request, response) => {
+app.get(`${baseUrl}/:id`, (request, response) => {
   const id = request.params.id;
   const person = persons.find((person) => person.id === id);
   if (person) response.json(person);
@@ -53,7 +55,7 @@ app.get("/api/persons/:id", (request, response) => {
   }
 });
 
-app.post("/api/persons", (request, response) => {
+app.post(baseUrl, (request, response) => {
   const body = request.body;
   const person = {
     id: String(Math.random() * 10000),
@@ -75,7 +77,7 @@ app.post("/api/persons", (request, response) => {
   console.log(persons);
 });
 
-app.delete("/api/persons/:id", (request, response) => {
+app.delete(`${baseUrl}/:id`, (request, response) => {
   const id = request.params.id;
   let newPersons;
   if (persons.find((person) => person.id === id)) {
