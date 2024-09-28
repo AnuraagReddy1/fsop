@@ -9,7 +9,7 @@ const password = process.argv[2];
 
 console.log(password)
 
-const url = `mongodb+srv://anuraagreddy1:${password}@backend.ok4st.mongodb.net/?retryWrites=true&w=majority&appName=backend`;
+const url = `mongodb+srv://anuraagreddy1:${password}@backend.ok4st.mongodb.net/noteApp?retryWrites=true&w=majority`;
 
 console.log(url);
 mongoose.set("strictQuery", false);
@@ -37,19 +37,19 @@ mongoose
   .then(() => console.log("connected"))
   .catch((e) => console.log(e));
 
-// const noteSchema = new mongoose.Schema({
-//   content: String,
-//   important: Boolean,
-// });
+const noteSchema = new mongoose.Schema({
+  content: String,
+  important: Boolean,
+});
 
-// const Note = mongoose.model("Note", noteSchema);
+const Note = mongoose.model("Note", noteSchema);
 
-// const note = new Note({
-//   content: "HTML is easy",
-//   important: true,
-// });
+const note = new Note({
+  content: "HTML is easy",
+  important: true,
+});
 
-// note.save().then((result) => {
-//   console.log("note saved!");
-//   mongoose.connection.close();
-// });
+note.save().then((result) => {
+  console.log("note saved!");
+  mongoose.connection.close();
+});
