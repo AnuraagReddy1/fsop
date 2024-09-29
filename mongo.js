@@ -1,22 +1,23 @@
 const mongoose = require("mongoose");
+require('dotenv').config()
 
-if (process.argv.length < 3) {
-  console.log("give password as argument");
-  process.exit(1);
-}
+// if (process.argv.length < 3) {
+//   console.log("give password as argument");
+//   process.exit(1);
+// }
 
-const password = process.argv[2];
+const url = process.env.MONGODBURI;
 
-console.log(password)
+// const password = process.argv[2];
 
-const url = `mongodb+srv://anuraagreddy1:${password}@backend.ok4st.mongodb.net/noteApp?retryWrites=true&w=majority`;
+// console.log(password);
+
+// const url = `mongodb+srv://anuraagreddy1:${password}@backend.ok4st.mongodb.net/noteApp?retryWrites=true&w=majority`;
 
 console.log(url);
 mongoose.set("strictQuery", false);
 
-
 // 9DYCPSwjrCpo85fM
-
 
 // const noteSchema = new mongoose.Schema({
 //     content: String,
@@ -26,7 +27,7 @@ mongoose.set("strictQuery", false);
 // async function run() {
 //     await mongoose.connect(url);
 //     Note = mongoose.model("Note", noteSchema);
-  
+
 //     await mongoose.model('User').findOne(); // Works!
 //   }
 
@@ -42,14 +43,32 @@ const noteSchema = new mongoose.Schema({
   important: Boolean,
 });
 
+noteSchema.set("toObject", {
+  virtuals: true,
+  versionKey: false,
+  transform: function (doc, ret) {
+    console.log(typeof(doc));
+    delete ret._id;
+  },
+});
+
 const Note = mongoose.model("Note", noteSchema);
 
 const note = new Note({
-  content: "HTML is easy",
-  important: true,
+  content: process.argv[3],
+  important: process.argv[4],
 });
 
-note.save().then((result) => {
-  console.log("note saved!");
-  mongoose.connection.close();
-});
+if (note.content) {
+  note.save().then((result) => {
+    console.log(note);
+    mongoose.connection.close();
+  });
+} else {
+  Note.find({}).then((result) => {
+    console.log(result);
+    mongoose.connection.close();
+  });
+}
+
+module.exports = mongoose.model('Note', noteSchema)

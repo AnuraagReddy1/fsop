@@ -1,13 +1,16 @@
 const express = require("express");
-const cors = require("cors")
+const cors = require("cors");
 
 const app = express();
 
 app.use(express.json());
 
-app.use(express.static('dist'))
+app.use(express.static("dist"));
 
-app.use(cors())
+require('dotenv').config()
+app.use(cors());
+
+const Note = require('./models/note')
 
 let persons = [
   {
@@ -32,11 +35,12 @@ let persons = [
   },
 ];
 
-const baseUrl = '/api/persons'
+const baseUrl = "/api/persons";
 
 app.get(baseUrl, (request, response) => {
-  response.json(persons);
-  
+  Note.find({}).then((notes) => {
+    response.json(notes);
+  });
 });
 
 app.get("/info", (request, response) => {
