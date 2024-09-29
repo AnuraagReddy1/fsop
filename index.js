@@ -10,7 +10,7 @@ app.use(express.static("dist"));
 require('dotenv').config()
 app.use(cors());
 
-const Note = require('./models/note')
+const Note = require('./note')
 
 let persons = [
   {
