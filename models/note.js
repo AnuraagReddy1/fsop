@@ -54,21 +54,21 @@ noteSchema.set("toObject", {
 
 const Note = mongoose.model("Note", noteSchema);
 
-const note = new Note({
-  content: process.argv[3],
-  important: process.argv[4],
-});
+// const note = new Note({
+//   content: process.argv[3],
+//   important: process.argv[4],
+// });
 
-if (note.content) {
-  note.save().then((result) => {
-    console.log(note);
-    mongoose.connection.close();
-  });
-} else {
-  Note.find({}).then((result) => {
-    console.log(result);
-    mongoose.connection.close();
-  });
-}
+// if (note.content) {
+//   note.save().then((result) => {
+//     console.log(note);
+//     mongoose.connection.close();
+//   });
+// } else {
+//   Note.find({}).then((result) => {
+//     console.log(result);
+//     mongoose.connection.close();
+//   });
+// }
 
 module.exports = mongoose.model('Note', noteSchema)

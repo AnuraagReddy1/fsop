@@ -35,7 +35,7 @@ let persons = [
   },
 ];
 
-const baseUrl = "/api/persons";
+const baseUrl = "/api/notes";
 
 app.get(baseUrl, (request, response) => {
   Note.find({}).then((notes) => {
@@ -43,55 +43,67 @@ app.get(baseUrl, (request, response) => {
   });
 });
 
-app.get("/info", (request, response) => {
-  const date = new Date();
-  response.send(
-    `<div><p>Phone book has info for ${persons.length} people</p></br><p>${date}</p></div>`
-  );
-});
-
-app.get(`${baseUrl}/:id`, (request, response) => {
-  const id = request.params.id;
-  const person = persons.find((person) => person.id === id);
-  if (person) response.json(person);
-  else {
-    response.status(404).end();
-  }
-});
-
 app.post(baseUrl, (request, response) => {
-  const body = request.body;
-  const person = {
-    id: String(Math.random() * 10000),
-    name: body.name,
-    number: body.number,
-  };
-  console.log(person);
-  if (!persons.find((person) => person.name === body.name)) {
-    if (body.name && body.number) {
-      persons = persons.concat(person);
-      response.send(persons);
-    } else {
-      console.log("No person maan!");
-      response.status(400).send("Name or number missing!");
-    }
-  } else {
-    response.status(400).send("Name already exists");
-  }
-  console.log(persons);
-});
+  const body = request.body
 
-app.delete(`${baseUrl}/:id`, (request, response) => {
-  const id = request.params.id;
-  let newPersons;
-  if (persons.find((person) => person.id === id)) {
-    newPersons = persons.filter((person) => person.id !== id);
-  } else {
-    response.status(404).end();
+  if (body.content === undefined) {
+    return response.status(400).json({ error: 'Content missing!' })
   }
-  console.log("Person Deleted");
-  response.status(204).send(newPersons);
-});
+
+  const note = new Note({
+    content: body.content,
+    important: body.important || false,
+  })
+
+  note.save().then(savedNote => {
+    response.json(savedNote)
+  })
+})
+
+
+
+// app.get(`${baseUrl}/:id`, (request, response) => {
+//   const id = request.params.id;
+//   const person = persons.find((person) => person.id === id);
+//   if (person) response.json(person);
+//   else {
+//     response.status(404).end();
+//   }
+// });
+
+// app.post(baseUrl, (request, response) => {
+//   const body = request.body;
+//   const person = {
+//     id: String(Math.random() * 10000),
+//     name: body.name,
+//     number: body.number,
+//   };
+//   console.log(person);
+//   if (!persons.find((person) => person.name === body.name)) {
+//     if (body.name && body.number) {
+//       persons = persons.concat(person);
+//       response.send(persons);
+//     } else {
+//       console.log("No person maan!");
+//       response.status(400).send("Name or number missing!");
+//     }
+//   } else {
+//     response.status(400).send("Name already exists");
+//   }
+//   console.log(persons);
+// });
+
+// app.delete(`${baseUrl}/:id`, (request, response) => {
+//   const id = request.params.id;
+//   let newPersons;
+//   if (persons.find((person) => person.id === id)) {
+//     newPersons = persons.filter((person) => person.id !== id);
+//   } else {
+//     response.status(404).end();
+//   }
+//   console.log("Person Deleted");
+//   response.status(204).send(newPersons);
+// });
 
 const PORT = process.env.PORT || 3001;
 app.listen(PORT, () => {
