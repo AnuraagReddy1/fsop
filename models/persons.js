@@ -16,10 +16,9 @@ mongoose
 const phoneSchema = new mongoose.Schema({
   name: String,
   phoneNumber: String,
-  test: Number,
 });
 
-noteSchema.set("toObject", {
+phoneSchema.set("toObject", {
   virtuals: true,
   versionKey: false,
   transform: function (doc, ret) {
@@ -28,7 +27,7 @@ noteSchema.set("toObject", {
   },
 });
 
-const Note = mongoose.model("Note", noteSchema);
+const Persons = mongoose.model("Persons", phoneSchema);
 
 // app.get("/info", (request, response) => {
 //   const date = new Date();
@@ -38,4 +37,4 @@ const Note = mongoose.model("Note", noteSchema);
 // });
 //
 
-module.exports = mongoose.model("Note", noteSchema);
+module.exports = mongoose.model("Persons", phoneSchema);

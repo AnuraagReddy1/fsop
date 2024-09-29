@@ -7,60 +7,83 @@ app.use(express.json());
 
 app.use(express.static("dist"));
 
-require('dotenv').config()
+require("dotenv").config();
 app.use(cors());
 
-const Note = require('./models/note')
+const Note = require("./models/note");
+const Persons = require("./models/persons");
 
-let persons = [
-  {
-    id: "1",
-    name: "Arto Hellas",
-    number: "040-123456",
-  },
-  {
-    id: "2",
-    name: "Ada Lovelace",
-    number: "39-44-5323523",
-  },
-  {
-    id: "3",
-    name: "Dan Abramov",
-    number: "12-43-234345",
-  },
-  {
-    id: "4",
-    name: "Mary Poppendieck",
-    number: "39-23-6423122",
-  },
-];
+// let persons = [
+//   {
+//     id: "1",
+//     name: "Arto Hellas",
+//     number: "040-123456",
+//   },
+//   {
+//     id: "2",
+//     name: "Ada Lovelace",
+//     number: "39-44-5323523",
+//   },
+//   {
+//     id: "3",
+//     name: "Dan Abramov",
+//     number: "12-43-234345",
+//   },
+//   {
+//     id: "4",
+//     name: "Mary Poppendieck",
+//     number: "39-23-6423122",
+//   },
+// ];
 
-const baseUrl = "/api/notes";
+const noteUrl = "/api/notes";
+const personsURL = "/api/persons";
 
-app.get(baseUrl, (request, response) => {
+app.get(noteUrl, (request, response) => {
   Note.find({}).then((notes) => {
     response.json(notes);
   });
 });
 
-app.post(baseUrl, (request, response) => {
-  const body = request.body
+app.post(noteUrl, (request, response) => {
+  const body = request.body;
 
   if (body.content === undefined) {
-    return response.status(400).json({ error: 'Content missing!' })
+    return response.status(400).json({ error: "Content missing!" });
   }
 
   const note = new Note({
     content: body.content,
     important: body.important || false,
-  })
+  });
 
-  note.save().then(savedNote => {
-    response.json(savedNote)
-  })
-})
+  note.save().then((savedNote) => {
+    response.json(savedNote);
+  });
+});
 
+app.get(personsURL, (request, response) => {
+  Persons.find({}).then((persons) => {
+    response.json(persons);
+  });
+});
 
+app.post(personsURL, (request, response) => {
+  const body = request.body;
+
+  if (body.name === undefined || body.phoneNumber === undefined) {
+    return response.status(400).json({ error: "Name/Phone number missing!" });
+  }
+
+  const person = new Persons({
+    name: body.name,
+    phoneNumber: body.phoneNumber,
+  });
+
+  person.save().then((savedPerson) => {
+    response.json(savedPerson);
+  });
+});
 
 // app.get(`${baseUrl}/:id`, (request, response) => {
 //   const id = request.params.id;
