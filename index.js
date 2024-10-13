@@ -144,14 +144,10 @@ app.put(`${personsURL}/:id`, (request, response, next) => {
     .catch((error) => next(error));
 });
 
-// app.get(`${baseUrl}/:id`, (request, response) => {
-//   const id = request.params.id;
-//   const person = persons.find((person) => person.id === id);
-//   if (person) response.json(person);
-//   else {
-//     response.status(404).end();
-//   }
-// });
+app.get(`${personsURL}/:id`, (request, response) => {
+  const id = request.params.id;
+  Persons.findById(id).then((person) => response.json(person));
+});
 
 // app.post(baseUrl, (request, response) => {
 //   const body = request.body;
