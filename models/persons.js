@@ -14,8 +14,19 @@ mongoose
   .catch((e) => console.log(e));
 
 const phoneSchema = new mongoose.Schema({
-  name: String,
-  phoneNumber: String,
+  name: {
+    type: String,
+    minLength: 3,
+    required: true,
+  },
+  phoneNumber: {
+    type: String,
+    validate: {
+      validator: function (v) {
+        return /^\d{2,3}-\d+/.test(v);
+      },
+    },
+  },
 });
 
 phoneSchema.set("toObject", {

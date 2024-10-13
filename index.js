@@ -110,9 +110,9 @@ app.get(personsURL, (request, response) => {
 app.post(personsURL, (request, response, next) => {
   const body = request.body;
 
-  if (body.name === undefined || body.phoneNumber === undefined) {
-    return response.status(400).json({ error: "Name/Phone number missing!" });
-  }
+  // if (body.name === undefined || body.phoneNumber === undefined) {
+  //   return response.status(400).json({ error: "Name/Phone number missing!" });
+  // }
 
   const person = new Persons({
     name: body.name,
@@ -128,8 +128,9 @@ app.post(personsURL, (request, response, next) => {
 });
 
 app.delete(`${personsURL}/:id`, (request, response, next) => {
+  console.log("In delete function")
   Persons.findByIdAndDelete(request.params.id)
-    .then((result) => response.status(204).end())
+    .then((result) => response.status(204).send())
     .catch((error) => next(error));
 });
 
@@ -193,9 +194,10 @@ const errorHandler = (error, request, response, next) => {
 
   if (error.name === "CastError") {
     return response.status(400).send({ error: "malformatted id" });
+  } else if (error.name === "ValidationError") {
+    return response.status(400).json({ error: error.message });
+    next(error);
   }
-
-  next(error);
 };
 
 // this has to be the last loaded middleware, also all the routes should be registered before this!
