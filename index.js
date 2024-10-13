@@ -62,13 +62,52 @@ app.post(noteUrl, (request, response) => {
   });
 });
 
+app.get("/api/notes/:id", (request, response, next) => {
+  Note.findById(request.params.id)
+    .then((note) => {
+      if (note) {
+        response.json(note);
+      } else {
+        response.status(404).end();
+      }
+    })
+    .catch((error) => {
+      console.log(error);
+      // response.status(400).send({error: "Malformatted id"})
+      next(error);
+    });
+});
+
+app.delete("/api/notes/:id", (request, response, next) => {
+  Note.findByIdAndDelete(request.params.id)
+    .then((result) => {
+      response.status(204).send("Success");
+    })
+    .catch((error) => next(error));
+});
+
+app.put("/api/notes/:id", (request, response, next) => {
+  const body = request.body;
+
+  const note = {
+    content: body.content,
+    important: body.important,
+  };
+
+  Note.findByIdAndUpdate(request.params.id, note, { new: true })
+    .then((updatedNote) => {
+      response.json(updatedNote);
+    })
+    .catch((error) => next(error));
+});
+
 app.get(personsURL, (request, response) => {
   Persons.find({}).then((persons) => {
     response.json(persons);
   });
 });
 
-app.post(personsURL, (request, response) => {
+app.post(personsURL, (request, response, next) => {
   const body = request.body;
 
   if (body.name === undefined || body.phoneNumber === undefined) {
@@ -80,9 +119,29 @@ app.post(personsURL, (request, response) => {
     phoneNumber: body.phoneNumber,
   });
 
-  person.save().then((savedPerson) => {
-    response.json(savedPerson);
-  });
+  person
+    .save()
+    .then((savedPerson) => {
+      response.json(savedPerson);
+    })
+    .catch((error) => next(error));
+});
+
+app.delete(`${personsURL}/:id`, (request, response, next) => {
+  Persons.findByIdAndDelete(request.params.id)
+    .then((response) => response.status(204).end())
+    .catch((error) => next(error));
+});
+
+app.put(`${personsURL}/:id`, (request, response, next) => {
+  const body = request.body;
+  const person = {
+    name: body.name,
+    phoneNumber: body.phoneNumber,
+  };
+  Persons.findByIdAndUpdate(request.params.id, person, { new: true })
+    .then((updatedPerson) => response.json(updatedPerson))
+    .catch((error) => next(error));
 });
 
 // app.get(`${baseUrl}/:id`, (request, response) => {
@@ -133,30 +192,15 @@ app.listen(PORT, () => {
   console.log(`Server running on port ${PORT}`);
 });
 
-// const http = require('http')
+const errorHandler = (error, request, response, next) => {
+  console.error(error.message);
 
-// let notes = [
-//   {
-//     id: "1",
-//     content: "HTML is easy",
-//     important: true
-//   },
-//   {
-//     id: "2",
-//     content: "Browser can execute only JavaScript",
-//     important: false
-//   },
-//   {
-//     id: "3",
-//     content: "GET and POST are the most important methods of HTTP protocol",
-//     important: true
-//   }
-// ]
-// const app = http.createServer((request, response) => {
-//   response.writeHead(200, { 'Content-Type': 'application/json' })
-//   response.end(JSON.stringify(notes))
-// })
+  if (error.name === "CastError") {
+    return response.status(400).send({ error: "malformatted id" });
+  }
 
-// const PORT = 3001
-// app.listen(PORT)
-// console.log(`Server running on port ${PORT}`)
+  next(error);
+};
+
+// this has to be the last loaded middleware, also all the routes should be registered before this!
+app.use(errorHandler);
