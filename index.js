@@ -129,7 +129,7 @@ app.post(personsURL, (request, response, next) => {
 
 app.delete(`${personsURL}/:id`, (request, response, next) => {
   Persons.findByIdAndDelete(request.params.id)
-    .then((response) => response.status(204).end())
+    .then((result) => response.status(204).end())
     .catch((error) => next(error));
 });
 
